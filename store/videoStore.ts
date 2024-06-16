@@ -1,29 +1,44 @@
 import { defineStore } from 'pinia';
+import type { Video } from '~/types/video';
 // 使用composition API模式定义store
 interface State{
-  videoList:string[],
+  videoList:Video[],
   currentVIdeoIndex:number
 }
 export const useVideoStore = defineStore('videoStore', () => {
   // 初始状态
   const initState:State = {
-    videoList: ['https://www.ebrainzone.com/JTI/240611_JTI_Acopy_V3_D_01.mp4','https://www.ebrainzone.com/JTI/240611_JTI_Acopy_V3_D_02.mp4'],
+    videoList: [],
     currentVIdeoIndex:0
   };
 
   //state
-  const videoList = ref<string[]>(initState.videoList);
+  const videoList = ref<Video[]>(initState.videoList);
   const currentVideoIndex = ref<number>(initState.currentVIdeoIndex)
 
   //gatters
-  const currentVideoUrl = computed(() => videoList.value[currentVideoIndex.value]);
+  const currentVideoUrl = computed<string>(() => {
+    if(videoList.value) return videoList.value[currentVideoIndex.value]?.url
+    else return ''
+  })
 
   //actions
-  function setVideoList(payload:string[]) {
+  function setVideoList(payload:Video[]) {
     videoList.value = payload
+  }
+  function incresCurrentVideoIndex() {
+    currentVideoIndex.value++
   }
 
 
-  return { videoList, currentVideoIndex, currentVideoUrl, setVideoList };
+  return { 
+    //data
+    videoList, 
+    currentVideoIndex, 
+    currentVideoUrl, 
+    //methods
+    setVideoList,
+    incresCurrentVideoIndex
+  };
 });
 export default useVideoStore
